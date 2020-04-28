@@ -421,11 +421,12 @@ if __name__ =="__main__":
 		print("\nExiting script! No Scrape for you")
 		sys.exit(1)
 	
-	
+	#path = "//netapp4.cmi.cypress.com//usr4//DOSexe//ufiles//F4PHOTO//SEM_IMG_DUMP//"
+	sem_img_dump_path = os.getenv("sem_img_dump_path")
 	this_month_directory = datetime.datetime.now().strftime("_%B_%Y")
-	vera401_dir = "E://ufiles//F4PHOTO//SEM_IMG_DUMP//vera401//" + this_month_directory + "//"
-	vera402_dir = "E://ufiles//F4PHOTO//SEM_IMG_DUMP//vera402//"+ this_month_directory + "//"
-	verity_dir = "E://ufiles//F4PHOTO//SEM_IMG_DUMP//verity401//"+ this_month_directory + "//"
+	vera401_dir = sem_img_dump_path + "vera401//" + this_month_directory + "//"
+	vera402_dir = sem_img_dump_path + "vera402//"+ this_month_directory + "//"
+	verity_dir = sem_img_dump_path + "verity401//"+ this_month_directory + "//"
 
 	#=================================================================
 	#======================= MEASDISPLAY / OBS=======================
