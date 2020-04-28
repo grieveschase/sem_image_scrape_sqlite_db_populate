@@ -12,14 +12,14 @@ except ValueError:
     print("\nExiting script, no changes made to DBs")
     sys.exit(1)
 
-main_db = (os.getenv('main_img_db') or sys.argv[2])
+main_db = (os.getenv('main_db_path') or sys.argv[2])
 if not os.path.isfile(main_db):
     print("\nprovided main db file path does not exist!")
     print("\nProvided path: " + main_db)
     print("\nExiting script, no changes made to DBs")
     sys.exit(1)
 
-backup_db = (os.getenv('backup_img_db') or sys.argv[3])
+backup_db = (os.getenv('backup_db_path') or sys.argv[3])
 if not os.path.isfile(main_db):
     print("\nprovided backup db file path does not exist!")
     print("\nProvided path: " + backup_db)

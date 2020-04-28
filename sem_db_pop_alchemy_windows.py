@@ -393,12 +393,24 @@ if __name__ =="__main__":
     #db_file_flask = "/home/ccag/Python_Scripts/sem_flask_alchemy/data-dev.sqlite"
 
     #backup db
-    db_file = "C://Python3//sem_flask_alchemy_db_pop//backup_db.sqlite"
-    db_file_flask = "C://Python3//sem_flask_alchemy//data-dev.sqlite"
+	db_file = os.getenv('backup_db_path')
+	
+    #main flask db
+	db_file_flask = os.getenv('main_db_path')
+	
     number_days_look_back = int(sys.argv[1])
     number_minutes_lookback =  60 * 24 * number_days_look_back
     seconds_lookback = 60*number_minutes_lookback
-    add_to_flask_db = True
+    add_to_flask_db = sys.argv[2].lower() == 'true'
+	
+	
+	if (not os.path.isfile(db_file_flask)) and add_to_flask_db:
+		print("\nMain flask db is not available!")
+		print("\nScript is trying to add data to flask db!")
+		print("\nExiting script! No Scrape for you")
+		sys.exit(1)
+	
+	
     this_month_directory = datetime.datetime.now().strftime("_%B_%Y")
     vera401_dir = "E://ufiles//F4PHOTO//SEM_IMG_DUMP//vera401//" + this_month_directory + "//"
     vera402_dir = "E://ufiles//F4PHOTO//SEM_IMG_DUMP//vera402//"+ this_month_directory + "//"
