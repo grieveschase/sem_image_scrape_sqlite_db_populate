@@ -246,14 +246,14 @@ def db_init(db_file, db_table):
 			conn.close()
 def sem_image_laber(data):
 	lineThickness = 2
-	slot_num = str(data[0])
-	lot_num = data[3]
-	img_fov = data[1]
+	slot_num = str(data[1])
+	lot_num = data[4]
+	img_fov = data[2]
 	legend_number = int(img_fov/3)
 	if legend_number ==0:
 		legend_number = np.round(img_fov/3,1)
-	obs_col = str(data[9])
-	obs_row = str(data[10])
+	obs_col = str(data[10])
+	obs_row = str(data[11])
 	img_og = cv2.imread(data[-1])
 	cv2.putText(img = img_og, text=str(legend_number)+" um", org=(10,450),fontFace=1, fontScale=2, color=(0,255,0), thickness=2)
 	#Scale Bar Line, bottom left
@@ -421,8 +421,8 @@ if __name__ =="__main__":
 		print("\nExiting script! No Scrape for you")
 		sys.exit(1)
 	
-	#path = "//netapp4.cmi.cypress.com//usr4//DOSexe//ufiles//F4PHOTO//SEM_IMG_DUMP//"
-	sem_img_dump_path = os.getenv("sem_img_dump_path")
+	path = "//netapp4.cmi.cypress.com//usr4//DOSexe//ufiles//F4PHOTO//SEM_IMG_DUMP//"
+	sem_img_dump_path = os.getenv("sem_img_dump_path") or path
 	this_month_directory = datetime.datetime.now().strftime("_%B_%Y")
 	vera401_dir = sem_img_dump_path + "vera401//" + this_month_directory + "//"
 	vera402_dir = sem_img_dump_path + "vera402//"+ this_month_directory + "//"
