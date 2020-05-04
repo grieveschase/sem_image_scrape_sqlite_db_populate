@@ -1,0 +1,1 @@
+python C:\Python3\sem_image_scrape_sqlite_db_populate\clear_flask_host_img_pool.py
