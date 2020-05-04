@@ -388,7 +388,7 @@ def start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vsem_dir, obs_f
 
 
 if __name__ =="__main__":
-	expected_number_of_argvs = 1 + 2 #first argv is always script name....
+	expected_number_of_argvs = 1 + 4 #first argv is always script name....
 	argv_error_statement = '''
 	Argv variables looking for: 
 	[1] number of days to lookback and pull data from, type integer.
@@ -405,11 +405,11 @@ if __name__ =="__main__":
 	#db_file_flask = "/home/ccag/Python_Scripts/sem_flask_alchemy/data-dev.sqlite"
 
 	#backup db
-	db_file = os.getenv('backup_db_path')
+	db_file = os.getenv('backup_db_path') or sys.argv[4]
 	
 	#main flask db
-	db_file_flask = os.getenv('main_db_path')
-	number_days_look_back = int(sys.argv[1])
+	db_file_flask = os.getenv('main_db_path') or sys.argv[3]
+	number_days_look_back = float(sys.argv[1])
 	number_minutes_lookback =  60 * 24 * number_days_look_back
 	seconds_lookback = 60*number_minutes_lookback
 	add_to_flask_db = sys.argv[2].lower() == 'true'
