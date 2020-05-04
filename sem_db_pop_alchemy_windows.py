@@ -385,99 +385,105 @@ def start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vsem_dir, obs_f
 			for tic in lot:
 				insert_data_dev(new_table, tic, db_file_flask)
 
+def write_error_log():
+	with open("error_log.txt" , "a") as o_file:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+		o_file.write( str(datetime.datetime.now()) + "  :  " + str(exc_type) +"," + str(fname) +"," + str(sys.exc_info()[1])+ "," +"line: "+ str(exc_tb.tb_lineno) + "\n")
 
 
 if __name__ =="__main__":
-	expected_number_of_argvs = 1 + 4 #first argv is always script name....
-	argv_error_statement = '''
-	Argv variables looking for: 
-	[1] number of days to lookback and pull data from, type integer.
-	[2] add the image data to the main flask database, True or False, type str.
-	'''
-	
-	if not len(sys.argv) == expected_number_of_argvs:
-		print("Lacking correct number of arg variables!")
-		print(argv_error_statement)
-		print("Exiting Script, no data pulled")
-		sys.exit(1)
-	
-	#db_file = "/home/ccag/Python_Scripts/sem_img_db/backup_db.sqlite"
-	#db_file_flask = "/home/ccag/Python_Scripts/sem_flask_alchemy/data-dev.sqlite"
+	try:
+		expected_number_of_argvs = 1 + 4 #first argv is always script name....
+		argv_error_statement = '''
+		Argv variables looking for: 
+		[1] number of days to lookback and pull data from, type integer.
+		[2] add the image data to the main flask database, True or False, type str.
+		'''
+		
+		if not len(sys.argv) == expected_number_of_argvs:
+			print("Lacking correct number of arg variables!")
+			print(argv_error_statement)
+			print("Exiting Script, no data pulled")
+			sys.exit(1)
+		
+		#db_file = "/home/ccag/Python_Scripts/sem_img_db/backup_db.sqlite"
+		#db_file_flask = "/home/ccag/Python_Scripts/sem_flask_alchemy/data-dev.sqlite"
 
-	#backup db
-	db_file = os.getenv('backup_db_path') or sys.argv[4]
-	
-	#main flask db
-	db_file_flask = os.getenv('main_db_path') or sys.argv[3]
-	number_days_look_back = float(sys.argv[1])
-	number_minutes_lookback =  60 * 24 * number_days_look_back
-	seconds_lookback = 60*number_minutes_lookback
-	add_to_flask_db = sys.argv[2].lower() == 'true'
-	
-	
-	if (not os.path.isfile(db_file_flask)) and add_to_flask_db:
-		print("\nMain flask db is not available!")
-		print("\nScript is trying to add data to flask db!")
-		print("\nExiting script! No Scrape for you")
-		sys.exit(1)
-	
-	path = "//netapp4.cmi.cypress.com//usr4//DOSexe//ufiles//F4PHOTO//SEM_IMG_DUMP//"
-	sem_img_dump_path = os.getenv("sem_img_dump_path") or path
-	this_month_directory = datetime.datetime.now().strftime("_%B_%Y")
-	vera401_dir = sem_img_dump_path + "vera401//" + this_month_directory + "//"
-	vera402_dir = sem_img_dump_path + "vera402//"+ this_month_directory + "//"
-	verity_dir = sem_img_dump_path + "verity401//"+ this_month_directory + "//"
+		#backup db
+		db_file = os.getenv('backup_db_path') or sys.argv[4]
+		
+		#main flask db
+		db_file_flask = os.getenv('main_db_path') or sys.argv[3]
+		number_days_look_back = float(sys.argv[1])
+		number_minutes_lookback =  60 * 24 * number_days_look_back
+		seconds_lookback = 60*number_minutes_lookback
+		add_to_flask_db = sys.argv[2].lower() == 'true'
+		
+		
+		if (not os.path.isfile(db_file_flask)) and add_to_flask_db:
+			print("\nMain flask db is not available!")
+			print("\nScript is trying to add data to flask db!")
+			print("\nExiting script! No Scrape for you")
+			sys.exit(1)
+		
+		path = "//netapp4.cmi.cypress.com//usr4//DOSexe//ufiles//F4PHOTO//SEM_IMG_DUMP//"
+		sem_img_dump_path = os.getenv("sem_img_dump_path") or path
+		this_month_directory = datetime.datetime.now().strftime("_%B_%Y")
+		vera401_dir = sem_img_dump_path + "vera401//" + this_month_directory + "//"
+		vera402_dir = sem_img_dump_path + "vera402//"+ this_month_directory + "//"
+		verity_dir = sem_img_dump_path + "verity401//"+ this_month_directory + "//"
 
-	#=================================================================
-	#======================= MEASDISPLAY / OBS=======================
-	#=================================================================
-	db_table = "measdisplay_obs"
-	obs_folder_name = "MeasDisplay"
-	new_table = "measdisplay_obs"
+		#=================================================================
+		#======================= MEASDISPLAY / OBS=======================
+		#=================================================================
+		db_table = "measdisplay_obs"
+		obs_folder_name = "MeasDisplay"
+		new_table = "measdisplay_obs"
 
-	#=======================VERA401 MEASDISPLAY / OBS=======================
-	tool = 'vera401'
-	obs_img_bool = True
-	print("Starting MeasDisplay Vera401")
-	start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera401_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db, db_file_flask)
+		#=======================VERA401 MEASDISPLAY / OBS=======================
+		tool = 'vera401'
+		obs_img_bool = True
+		print("Starting MeasDisplay Vera401")
+		start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera401_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db, db_file_flask)
 
-	#=======================VERA402 MEASDISPLAY / OBS=======================
-	tool = 'vera402'
-	obs_img_bool = True
-	print("Starting MeasDisplay Vera402")
-	start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera402_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
+		#=======================VERA402 MEASDISPLAY / OBS=======================
+		tool = 'vera402'
+		obs_img_bool = True
+		print("Starting MeasDisplay Vera402")
+		start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera402_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
 
-	#=======================VERITY401 MEASDISPLAY / OBS=======================
-	tool = 'verity401'
-	obs_img_bool = True
-	print("Starting MeasDisplay Verity401")
-	start_scrape_and_db_pop(seconds_lookback, db_file, db_table, verity_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
+		#=======================VERITY401 MEASDISPLAY / OBS=======================
+		tool = 'verity401'
+		obs_img_bool = True
+		print("Starting MeasDisplay Verity401")
+		start_scrape_and_db_pop(seconds_lookback, db_file, db_table, verity_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
 
-	#==========================================================
-	#======================= PATTERNFOV =======================
-	#==========================================================
-	db_table = "patternfov"
-	obs_folder_name = "PatternFov"
-	new_table = "patternfov"
-	#=======================VERA401 PATTERNFOV =======================
-	tool = 'vera401'
-	obs_img_bool = False
-	print("Starting PatternFOV Vera401")
-	start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera401_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
+		#==========================================================
+		#======================= PATTERNFOV =======================
+		#==========================================================
+		db_table = "patternfov"
+		obs_folder_name = "PatternFov"
+		new_table = "patternfov"
+		#=======================VERA401 PATTERNFOV =======================
+		tool = 'vera401'
+		obs_img_bool = False
+		print("Starting PatternFOV Vera401")
+		start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera401_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
 
-	#=======================VERA402 PATTERNFOV =======================
-	tool = 'vera402'
-	obs_img_bool = False
-	print("Starting PatternFOV Vera402")
-	start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera402_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
+		#=======================VERA402 PATTERNFOV =======================
+		tool = 'vera402'
+		obs_img_bool = False
+		print("Starting PatternFOV Vera402")
+		start_scrape_and_db_pop(seconds_lookback, db_file, db_table, vera402_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
 
-	#=======================VERITY401 PATTERNFOV =======================
-	tool = 'verity401'
-	obs_img_bool = False
-	print("Starting PatternFOV Verity401")
-	start_scrape_and_db_pop(seconds_lookback, db_file, db_table, verity_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
-
-
+		#=======================VERITY401 PATTERNFOV =======================
+		tool = 'verity401'
+		obs_img_bool = False
+		print("Starting PatternFOV Verity401")
+		start_scrape_and_db_pop(seconds_lookback, db_file, db_table, verity_dir, obs_folder_name, new_table, tool, obs_img_bool,add_to_flask_db,db_file_flask)
+	except:
+		write_error_log()
 
 
 
